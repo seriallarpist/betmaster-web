@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-title" content="Bet Master">
 <meta name="theme-color" content="#090A0D">
 <style>
-  :root {
+  :root, html[data-theme="Default"] {
     --bg: #090A0D;
     --surface: #141519;
     --surface-alt: #1B1D22;
@@ -25,6 +25,21 @@
     --warm: #F59E6C;
     --danger: #FF5D5D;
     --live: #4DD4AC;
+  }
+  html[data-theme="Sunset"] {
+    --bg:#120A10; --surface:#1D1119; --surface-alt:#241420; --surface-soft:#2B1824; --border:#3A1F30;
+    --text:#FDF2F8; --text-2:#E7CBDB; --muted:#B98FA8; --accent:#FF6EC7; --accent-strong:#E0509F;
+    --warm:#FFB020; --danger:#FF5D5D; --live:#FF6EC7;
+  }
+  html[data-theme="Ocean"] {
+    --bg:#050F14; --surface:#0D1B22; --surface-alt:#112530; --surface-soft:#152E3A; --border:#173038;
+    --text:#EAF6FA; --text-2:#C4E1EA; --muted:#7FA8B8; --accent:#00D4FF; --accent-strong:#00A8CC;
+    --warm:#F59E6C; --danger:#FF5D5D; --live:#00D4FF;
+  }
+  html[data-theme="Mono"] {
+    --bg:#0E0E10; --surface:#18181B; --surface-alt:#1E1E22; --surface-soft:#212124; --border:#2A2A2E;
+    --text:#F4F4F5; --text-2:#D0D0D4; --muted:#9A9AA0; --accent:#C9C9D9; --accent-strong:#A9A9BC;
+    --warm:#E0B060; --danger:#FF5D5D; --live:#C9C9D9;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   html, body { background: var(--bg); color: var(--text); font-family: -apple-system, "Segoe UI", Roboto, sans-serif; }
@@ -40,6 +55,77 @@
   }
   #refreshBtn:active { background: var(--accent-strong); }
   #refreshBtn.spinning { opacity: 0.6; pointer-events: none; }
+  #settingsBtn {
+    margin-left: auto; background: var(--surface); border: 1px solid var(--border); color: var(--text-2);
+    font-size: 17px; width: 38px; height: 38px; border-radius: 10px; cursor: pointer;
+  }
+  #settingsBtn:active { background: var(--surface-soft); }
+
+  .overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 50;
+    align-items: flex-end; justify-content: center;
+  }
+  .overlay.show { display: flex; }
+  .sheet {
+    width: 100%; max-width: 480px; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 18px 18px 0 0; padding: 18px 18px calc(env(safe-area-inset-bottom) + 22px);
+    max-height: 85vh; overflow-y: auto; animation: sheetUp 0.2s ease-out;
+  }
+  @keyframes sheetUp { from { transform: translateY(24px); opacity: 0; } to { transform: none; opacity: 1; } }
+  .sheetHead { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .sheetHead h3 { font-size: 17px; font-weight: 800; }
+  .sheetHead button { background: none; border: 0; color: var(--muted); font-size: 18px; padding: 6px; }
+  .field { margin-bottom: 20px; }
+  .field label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 8px; color: var(--text-2); }
+  .field .hint { font-size: 11px; color: var(--muted); margin-top: 6px; line-height: 1.4; }
+  .field input[type="text"] {
+    width: 100%; background: var(--surface-alt); border: 1px solid var(--border); color: var(--text);
+    padding: 11px 12px; border-radius: 10px; font-size: 14px;
+  }
+  .segGroup { display: flex; background: var(--surface-alt); border-radius: 10px; padding: 3px; gap: 3px; }
+  .seg { flex: 1; background: none; border: 0; color: var(--muted); font-weight: 700; font-size: 12.5px; padding: 9px 0; border-radius: 8px; }
+  .seg.on { background: var(--accent); color: #06120D; }
+  .themeGrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .themeCard {
+    border: 1px solid var(--border); border-radius: 10px; padding: 10px; cursor: pointer; background: var(--surface-alt);
+  }
+  .themeCard.on { border-color: var(--accent); }
+  .themeCard .name { font-size: 12.5px; font-weight: 700; margin-bottom: 6px; }
+  .themeCard .dots { display: flex; gap: 5px; }
+  .themeCard .dots span { width: 14px; height: 14px; border-radius: 50%; display: inline-block; }
+  .primaryBtn {
+    width: 100%; background: var(--accent); color: #06120D; border: 0; font-weight: 800;
+    font-size: 14px; padding: 13px 0; border-radius: 12px; margin-top: 4px;
+  }
+  .bookCount { font-size: 10.5px; color: var(--muted); flex: 0 0 auto; }
+  #settingsBtn {
+    margin-left: 8px; background: var(--surface-soft); color: var(--text); border: 1px solid var(--border);
+    font-size: 16px; padding: 8px 12px; border-radius: 10px; cursor: pointer;
+  }
+
+  .sheet-backdrop {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 50;
+    align-items: flex-end; justify-content: center;
+  }
+  .sheet-backdrop.open { display: flex; }
+  .sheet {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 18px 18px 0 0;
+    width: 100%; max-width: 760px; padding: 18px 18px calc(env(safe-area-inset-bottom) + 22px);
+    max-height: 80vh; overflow-y: auto;
+  }
+  .sheet h3 { font-size: 16px; margin-bottom: 4px; }
+  .sheet p.hint { font-size: 12px; color: var(--muted); margin-bottom: 12px; }
+  .sheet label { font-size: 12px; color: var(--text-2); font-weight: 700; display: block; margin: 14px 0 6px; }
+  .sheet input {
+    width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text);
+    padding: 11px 12px; border-radius: 10px; font-size: 14px;
+  }
+  .sheet .row { display: flex; gap: 10px; margin-top: 18px; }
+  .sheet button.primary, .sheet button.secondary {
+    flex: 1; border: 0; border-radius: 10px; padding: 12px; font-weight: 700; font-size: 14px; cursor: pointer;
+  }
+  .sheet button.primary { background: var(--accent); color: #06120D; }
+  .sheet button.secondary { background: var(--surface-soft); color: var(--text-2); }
 
   .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 12px 0; }
   .stat { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; }
@@ -120,6 +206,7 @@
     <h1>Bet Master</h1>
     <div class="sub" id="subtitle">Live odds, real schedules, one board.</div>
   </div>
+  <button id="settingsBtn" aria-label="Settings">⚙</button>
   <button id="refreshBtn">Refresh</button>
 </header>
 
@@ -131,6 +218,37 @@
 </div>
 
 <div class="chips" id="chips"></div>
+
+<div id="settingsOverlay" class="overlay">
+  <div class="sheet">
+    <div class="sheetHead">
+      <h3>Settings</h3>
+      <button id="closeSettings" aria-label="Close">✕</button>
+    </div>
+
+    <div class="field">
+      <label>Odds API Key <span class="hint">(the-odds-api.com, free tier)</span></label>
+      <input id="apiKeyInput" type="text" placeholder="Paste your key for real sportsbook lines" autocapitalize="off" autocorrect="off" spellcheck="false">
+      <div class="hint">Stored only on this phone. Without a key you still get ESPN's public lines + Polymarket.</div>
+    </div>
+
+    <div class="field">
+      <label>Odds Format</label>
+      <div class="segGroup" id="oddsFormatGroup">
+        <button data-v="American" class="seg">American</button>
+        <button data-v="Percentage" class="seg">Percentage</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Interface Theme</label>
+      <div class="themeGrid" id="themeGrid"></div>
+    </div>
+
+    <button id="saveSettings" class="primaryBtn">Save &amp; Refresh</button>
+  </div>
+</div>
+
 <div id="board"><div class="empty">Loading games…</div></div>
 <div class="statusBar" id="statusBar"></div>
 
@@ -152,12 +270,69 @@ const POLY_KEYWORDS = { nfl:["nfl"], ufc:["ufc"], worldcup:["world cup","fifa"] 
 const REFRESH_MS = 60000;
 const WINDOW_DAYS = 5;
 
+/* the-odds-api.com sport keys, only used if the user supplies their own free key */
+const ODDS_API_SPORT_KEYS = {
+  nfl: "americanfootball_nfl",
+  mlb: "baseball_mlb",
+  nba: "basketball_nba",
+  nhl: "icehockey_nhl",
+  ufc: "mma_mixed_martial_arts",
+  worldcup: "soccer_fifa_world_cup",
+  mls: "soccer_usa_mls",
+  epl: "soccer_epl",
+};
+
+const THEMES = {
+  Default: ["#4DD4AC", "#7F8792", "#141519"],
+  Sunset:  ["#FF6EC7", "#B98FA8", "#1D1119"],
+  Ocean:   ["#00D4FF", "#7FA8B8", "#0D1B22"],
+  Mono:    ["#C9C9D9", "#9A9AA0", "#18181B"],
+};
+
+/* ---------- settings ---------- */
+const settings = Object.assign(
+  { apiKey: "", oddsFormat: "American", theme: "Default" },
+  JSON.parse(localStorage.getItem("bm.settings") || "{}")
+);
+function saveSettings() { localStorage.setItem("bm.settings", JSON.stringify(settings)); }
+function applyTheme() { document.documentElement.setAttribute("data-theme", settings.theme); }
+applyTheme();
+
 /* ---------- state ---------- */
 let matches = [];
-const movementBase = new Map();   // lineKey -> first-seen fair probability this session
+/* movement history is now handled by moveHistory (persistent, see above) */
 const openCards = new Set();
 let selected = new Set(JSON.parse(localStorage.getItem("bm.sports") || '["ufc","worldcup","nfl"]'));
 let favorites = new Set(JSON.parse(localStorage.getItem("bm.favs") || "[]"));
+let apiKey = localStorage.getItem("bm.apiKey") || "";
+
+/* persistent movement history: { [lineKey]: [{t, p}, ...] }, trimmed to 6h/60 points */
+const MOVE_RETENTION_MS = 6 * 3600000;
+const MOVE_MAX_POINTS = 60;
+let moveHistory = {};
+try { moveHistory = JSON.parse(localStorage.getItem("bm.moveHistory") || "{}"); } catch { moveHistory = {}; }
+let moveHistorySaveQueued = false;
+function saveMoveHistorySoon() {
+  if (moveHistorySaveQueued) return;
+  moveHistorySaveQueued = true;
+  setTimeout(() => {
+    moveHistorySaveQueued = false;
+    try { localStorage.setItem("bm.moveHistory", JSON.stringify(moveHistory)); } catch { /* storage full, ignore */ }
+  }, 400);
+}
+function recordMovement(key, prob) {
+  const now = Date.now();
+  const points = moveHistory[key] || [];
+  const last = points[points.length - 1];
+  if (!last || now - last.t > 20000) {
+    points.push({ t: now, p: prob });
+  }
+  const trimmed = points.filter(pt => now - pt.t <= MOVE_RETENTION_MS);
+  moveHistory[key] = trimmed.length > MOVE_MAX_POINTS ? trimmed.slice(trimmed.length - MOVE_MAX_POINTS) : trimmed;
+  saveMoveHistorySoon();
+  const first = moveHistory[key][0];
+  return first ? Math.round((prob - first.p) * 10) / 10 : 0;
+}
 
 /* ---------- helpers ---------- */
 const $ = id => document.getElementById(id);
@@ -266,7 +441,43 @@ function parseEspnOdds(comp, home, away) {
   return books;
 }
 
-/* ---------- data: Polymarket public prices ---------- */
+/* ---------- data: The Odds API (optional, needs the user's own free key) ---------- */
+
+
+/* ---------- data: The Odds API (only when the user supplies their own key) ---------- */
+async function fetchOddsApiSport(sportShortKey) {
+  const apiSport = ODDS_API_SPORT_KEYS[sportShortKey];
+  if (!apiSport || !settings.apiKey) return [];
+  const url = `https://api.the-odds-api.com/v4/sports/${apiSport}/odds/?apiKey=${encodeURIComponent(settings.apiKey)}&regions=us&markets=h2h,spreads,totals&oddsFormat=american`;
+  const res = await fetch(url);
+  if (!res.ok) {
+    const body = await res.text().catch(() => "");
+    throw new Error(`Odds API ${sportShortKey}: ${res.status} ${body.slice(0,80)}`);
+  }
+  const data = await res.json();
+  const out = [];
+  for (const ev of data) {
+    if (!ev.commence_time) continue;
+    const commence = new Date(ev.commence_time);
+    const books = (ev.bookmakers || []).slice(0, 6).map(bk => ({
+      title: bk.title,
+      isProb: false,
+      markets: (bk.markets || []).map(m => ({
+        key: m.key === "h2h" ? "Moneyline" : m.key === "spreads" ? "Spread" : "Over / Under",
+        outcomes: (m.outcomes || []).map(o => ({ name: o.name, price: o.price, point: o.point })),
+      })),
+    }));
+    out.push({
+      id: `oddsapi:${sportShortKey}:${ev.id}`,
+      sport: sportShortKey, league: SPORTS.find(s => s.key === sportShortKey)?.title || sportShortKey,
+      home: ev.home_team || "", away: ev.away_team || "",
+      commence, completed: false, sourceLive: null, scores: [],
+      books,
+    });
+  }
+  return out;
+}
+
 async function fetchPolymarket() {
   const url = "https://gamma-api.polymarket.com/events?active=true&closed=false&limit=500&order=startDate&ascending=true";
   const res = await fetch(url);
@@ -344,12 +555,13 @@ function oddsLines(match) {
       market.outcomes.forEach((o, i) => {
         const fair = Math.round(probs[i] * 10) / 10;
         const key = `${match.id}|${book.title}|${market.key}|${o.name}|${o.point ?? ""}`;
-        if (!movementBase.has(key)) movementBase.set(key, fair);
-        const delta = Math.round((fair - movementBase.get(key)) * 10) / 10;
+        const delta = recordMovement(key, fair);
         lines.push({
           book: book.title, market: market.key, name: o.name,
           point: o.point != null ? (o.point > 0 ? "+" + o.point : String(o.point)) : "",
-          price: book.isProb ? fair.toFixed(0) + "%" : (o.price > 0 ? "+" + o.price : String(o.price)),
+          price: book.isProb || settings.oddsFormat === "Percentage"
+            ? fair.toFixed(0) + "%"
+            : (o.price > 0 ? "+" + o.price : String(o.price)),
           prob: fair,
           delta,
         });
@@ -444,6 +656,7 @@ function cardHtml(m, now) {
           ${scoreStr ? ` · <span class="score">${scoreStr}</span>` : ""}
         </div>
       </div>
+      <span class="bookCount">${m.books.length} book${m.books.length === 1 ? "" : "s"}</span>
       <button class="starBtn ${isFav ? "on" : ""}" data-fk="${esc(favKey(m))}">${isFav ? "★" : "☆"}</button>
       <span class="chev">▶</span>
     </div>
@@ -466,6 +679,7 @@ async function load() {
   const active = SPORTS.filter(s => selected.has(s.key));
   const results = await Promise.allSettled([
     ...active.map(fetchSport),
+    ...(settings.apiKey ? active.map(s => fetchOddsApiSport(s.key)) : []),
     fetchPolymarket(),
   ]);
   const lists = [], errors = [];
@@ -479,6 +693,42 @@ async function load() {
 }
 
 $("refreshBtn").onclick = load;
+
+/* ---------- settings modal ---------- */
+function renderThemeGrid() {
+  $("themeGrid").innerHTML = Object.entries(THEMES).map(([name, colors]) => `
+    <div class="themeCard ${settings.theme === name ? "on" : ""}" data-t="${name}">
+      <div class="name">${name}</div>
+      <div class="dots">${colors.map(c => `<span style="background:${c}"></span>`).join("")}</div>
+    </div>`).join("");
+  $("themeGrid").querySelectorAll(".themeCard").forEach(el => el.onclick = () => {
+    settings.theme = el.dataset.t;
+    document.documentElement.setAttribute("data-theme", settings.theme);
+    renderThemeGrid();
+  });
+}
+function renderOddsFormatGroup() {
+  $("oddsFormatGroup").querySelectorAll(".seg").forEach(el => {
+    el.classList.toggle("on", el.dataset.v === settings.oddsFormat);
+    el.onclick = () => { settings.oddsFormat = el.dataset.v; renderOddsFormatGroup(); };
+  });
+}
+function openSettings() {
+  $("apiKeyInput").value = settings.apiKey;
+  renderOddsFormatGroup();
+  renderThemeGrid();
+  $("settingsOverlay").classList.add("show");
+}
+$("settingsBtn").onclick = openSettings;
+$("closeSettings").onclick = () => $("settingsOverlay").classList.remove("show");
+$("settingsOverlay").onclick = e => { if (e.target.id === "settingsOverlay") $("settingsOverlay").classList.remove("show"); };
+$("saveSettings").onclick = () => {
+  settings.apiKey = $("apiKeyInput").value.trim();
+  saveSettings();
+  $("settingsOverlay").classList.remove("show");
+  load();
+};
+
 renderChips();
 load();
 setInterval(load, REFRESH_MS);
