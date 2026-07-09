@@ -160,9 +160,12 @@
   .badge.soon { background: var(--warm); color: #241305; }
   .badge.final { background: var(--surface-soft); color: var(--muted); }
   .cardInfo { min-width: 0; flex: 1; }
-  .cardInfo .league { font-size: 10.5px; color: var(--muted); font-weight: 700; letter-spacing: 0.4px; text-transform: uppercase; }
-  .cardInfo .matchup { font-size: 15px; font-weight: 700; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .cardInfo .meta { font-size: 11.5px; color: var(--muted); margin-top: 3px; }
+  .cardInfo .league { font-size: 9.5px; color: var(--muted); font-weight: 700; letter-spacing: 0.3px; text-transform: uppercase; }
+  .cardInfo .matchup {
+    font-size: 13px; font-weight: 700; margin-top: 2px; line-height: 1.25;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .cardInfo .meta { font-size: 10.5px; color: var(--muted); margin-top: 3px; line-height: 1.4; }
   .cardInfo .meta .until { color: var(--warm); font-weight: 700; }
   .cardInfo .meta .score { color: var(--text-2); font-weight: 700; }
   .starBtn {
@@ -173,25 +176,35 @@
   .chev { flex: 0 0 auto; color: var(--muted); font-size: 12px; transition: transform 0.2s; }
   .card.open .chev { transform: rotate(90deg); }
 
-  .cardDetail { display: none; border-top: 1px solid var(--border); padding: 10px 14px 12px; }
+  .cardDetail { display: none; border-top: 1px solid var(--border); padding: 8px 12px 10px; }
   .card.open .cardDetail { display: block; animation: slideDown 0.18s ease-out; }
   @keyframes slideDown { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
   .oddsRow {
-    display: grid; grid-template-columns: 74px 1fr auto auto auto; gap: 8px; align-items: center;
-    padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 12px;
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    grid-template-areas: "outc move price" "book move2 prob";
+    column-gap: 6px; row-gap: 2px; align-items: center;
+    padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 11px;
   }
   .oddsRow:last-child { border-bottom: 0; }
-  .oddsRow .book { color: var(--muted); font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .oddsRow .outc { color: var(--text-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .oddsRow .outc small { color: var(--muted); }
-  .oddsRow .move { font-weight: 800; font-size: 11px; min-width: 38px; text-align: right; }
+  .oddsRow .book {
+    grid-area: book; color: var(--muted); font-size: 9.5px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .oddsRow .outc {
+    grid-area: outc; color: var(--text-2); font-size: 11.5px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .oddsRow .outc small { color: var(--muted); font-size: 9.5px; }
+  .oddsRow .move { grid-area: move; font-weight: 800; font-size: 10px; min-width: 30px; text-align: right; }
   .move.up { color: var(--accent); }
   .move.down { color: var(--warm); }
   .move.flat { color: transparent; }
-  .oddsRow .price { font-weight: 700; text-align: right; min-width: 44px; }
+  .oddsRow .price { grid-area: price; font-weight: 700; font-size: 11.5px; text-align: right; min-width: 40px; }
   .oddsRow .prob {
+    grid-area: prob; justify-self: end;
     background: var(--surface-soft); border: 1px solid var(--border); border-radius: 7px;
-    font-weight: 800; font-size: 11px; padding: 3px 7px; min-width: 48px; text-align: center;
+    font-weight: 800; font-size: 9.5px; padding: 2px 6px; text-align: center;
   }
   .noOdds { color: var(--muted); font-size: 12px; padding: 8px 0; text-align: center; }
 
